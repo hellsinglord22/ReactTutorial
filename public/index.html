@@ -31,6 +31,13 @@
             handleCommentSubmit: function(comment) {
                 console.log('The comment Author: ' + comment.author);
                 console.log('The comment itself: '+ comment.text);
+                console.log('The Comment URL: ' + this.props.comment);
+
+                // lets make shit feels real //
+                var comments = this.state.data;
+                comment.id = Date.now();
+                var newComments = comments.concat([comment]);
+                this.setState({data: newComments});
 
                 $.ajax({
                      url: this.props.url,
