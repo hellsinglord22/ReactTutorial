@@ -28,6 +28,23 @@
                 console.log('getting initial state');
                 return {data: [] };
             },
+            handleCommentSubmit: function(comment) {
+                console.log('The comment Author: ' + comment.author);
+                console.log('The comment itself: '+ comment.text);
+
+                $.ajax({
+                     url: this.props.url,
+                     dataType: 'json',
+                     type: 'POST',
+                     data: comment,
+                     success: function(data) {
+                       this.setState({data: data});
+                     }.bind(this),
+                     error: function(xhr, status, err) {
+                       console.error(this.props.url, status, err.toString());
+                     }.bind(this)
+                 });
+            },
             loadCommentsFromServer: function() {
                 $.ajax({
                     url: this.props.url,
@@ -48,14 +65,14 @@
             componentDidMount: function() {
                 console.log('mounting the component AKA Call after rendering the component');
                 this.loadCommentsFromServer();
-                // setInterval(this.loadCommentsFromServer, this.props.pollInterval);
+                setInterval(this.loadCommentsFromServer, this.props.pollInterval);
             },
             render: function() {
                 console.log('Rendering CommentBox...');
                 return (
                     <div className="commentBox">
                         <CommentList data={this.state.data} />
-                        <CommentForm />
+                        <CommentForm onCommentSubmit={this.handleCommentSubmit} />
                     </div>
                 );
             }
@@ -104,12 +121,13 @@
                     return;
                 }
 
-                // TODO send a post request to the server
+                // sending the data back to the parent
+                this.props.onCommentSubmit({author: author, text: text});
 
                 // change the state of the form ( Render it )
                 this.setState({author: '', text: ''});
 
-                
+
             },
             render: function() {
                 console.log('Rendering CommentForm...');
